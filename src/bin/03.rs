@@ -1,46 +1,80 @@
+use regex::Regex;
+use std::{collections::HashSet, default, ops::Range};
+
 advent_of_code::solution!(3);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    None
+    parse_input(input)
+        .iter()
+        .filter_map(|s| is_adj(&s))
+        .map(|s| s.symbol_type)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
     None
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Hash, Default, Eq)]
 struct EngineSymbol {
     symbol_type: EngineSymbolType,
+    value: <char, u32>,
+    position: Range<usize>,
+    pub line: Option<usize>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Hash, Default, Eq)]
 enum EngineSymbolType {
-    Number(u32),
-    Symbol(char),
+    Number,
+    Symbol,
+    #[default]
+    Empty,
 }
 
-fn parse_input(input: &str) -> Vec<Vec<EngineSymbol>> {
-    input.lines().map(|line| parse_line(line)).collect()
-}
-
-fn parse_line(line: &str) -> Vec<EngineSymbol> {
-    line.split('.')
-        .filter(|&s| s.len() > 0)
-        .map(|s| match s {
-            s if !s.chars().next().unwrap_or('N').is_digit(10) => EngineSymbol {
-                symbol_type: EngineSymbolType::Symbol(s.chars().next().unwrap()),
-            },
-            s => EngineSymbol {
-                symbol_type: EngineSymbolType::Number(s.parse::<u32>().unwrap()),
-            },
+fn parse_input(input: &str) -> HashSet<EngineSymbol> {
+    input
+        .lines()
+        .flat_map(|line| parse_line(line))
+        .enumerate()
+        .map(|(i, mut s)| {
+            s.line = Some(i);
+            s
         })
         .collect()
 }
 
+fn parse_line(line: &str) -> Vec<EngineSymbol> {
+    let re = Regex::new(r"(\d+)|([^\d.])").unwrap();
+
+    re.captures_iter(line)
+        .filter_map(|cap| {
+            cap.get(1)
+                .map(|num_match| EngineSymbol {
+                    symbol_type: EngineSymbolType::Number(num_match.as_str().parse().unwrap()),
+                    position: num_match.start()..num_match.end(),
+                    ..EngineSymbol::default()
+                })
+                .or_else(|| {
+                    cap.get(2).map(|sym_match| EngineSymbol {
+                        symbol_type: EngineSymbolType::Symbol(
+                            sym_match.as_str().chars().next().unwrap(),
+                        ),
+                        position: sym_match.start()..sym_match.start() + 1,
+                        ..EngineSymbol::default()
+                    })
+                })
+        })
+        .collect()
+}
+
+fn is_adj(part: EngineSymbol, schematic: HashSet<EngineSymbol>) -> Option<EngineSymbol> {
+    if part.symbol_type == EngineSymbolType::Symbol {
+        return None;
+    };
+    Some(part)
+}
+
 #[cfg(test)]
 mod tests {
-    use itertools::Itertools;
-
     use super::*;
 
     #[test]
@@ -57,19 +91,21 @@ mod tests {
 
     #[test]
     fn parse_line_test() {
-        let line = "...*..300...#";
+        let line = "467..114..";
         let expected = vec![
             EngineSymbol {
-                symbol_type: EngineSymbolType::Symbol('*'),
+                symbol_type: EngineSymbolType::Number(467),
+                position: 0..3,
+                ..EngineSymbol::default()
             },
             EngineSymbol {
-                symbol_type: EngineSymbolType::Number(300),
-            },
-            EngineSymbol {
-                symbol_type: EngineSymbolType::Symbol('#'),
+                symbol_type: EngineSymbolType::Number(114),
+                position: 5..8,
+                ..EngineSymbol::default()
             },
         ];
         let result = parse_line(line);
+        dbg!(&result);
         assert_eq!(result, expected);
     }
 }
