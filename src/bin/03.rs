@@ -38,14 +38,12 @@ struct EngineSymbol {
 enum EngineSymbolType {
     Number,
     Symbol,
-    Empty,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 enum EngineSymbolValue {
     Symbol(char),
     Number(u32),
-    Empty,
 }
 
 fn parse_input(input: &str) -> HashSet<EngineSymbol> {
