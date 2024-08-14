@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use num::integer::lcm;
 
 advent_of_code::solution!(8);
 
@@ -25,7 +26,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(steps)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<u64> {
     let (instructions, map) = parse_input(input);
     let start_locations: Vec<String> = map.keys().filter(|&s| s.ends_with("A")).cloned().collect();
 
@@ -34,7 +35,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         .map(|start| find_cycle_length(start, &instructions, &map))
         .collect();
 
-    Some(cycle_lengths.into_iter().fold(1, num::integer::lcm) as u32)
+    Some(cycle_lengths.into_iter().fold(1,lcm))
 }
 
 fn find_cycle_length(
