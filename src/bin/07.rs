@@ -1,6 +1,6 @@
 advent_of_code::solution!(7);
+use itertools::Itertools;
 use std::{cmp::Ordering, collections::HashMap};
-use itertools::{Itertools};
 
 #[derive(Debug, PartialEq, Hash, Clone, Eq, Copy)]
 struct Card {
@@ -76,8 +76,8 @@ impl Hand {
             .unwrap()
             .chars()
             .map(|c| {
-                if c == 'J'{
-                    return Card {value: '*'};
+                if c == 'J' {
+                    return Card { value: '*' };
                 }
                 Card { value: c }
             })
@@ -91,32 +91,34 @@ impl Hand {
 
     fn get_rank(&self) -> HandRanks {
         let mut counts = self.get_counts();
-        let jokers = counts.remove(&Card{value: '*'}).unwrap_or(0);
-        if jokers == 5 { return HandRanks::FiveOfAKind};
+        let jokers = counts.remove(&Card { value: '*' }).unwrap_or(0);
+        if jokers == 5 {
+            return HandRanks::FiveOfAKind;
+        };
 
         let mut counts = counts.into_values().collect::<Vec<usize>>();
-        counts.sort_unstable_by(|a,b| b.cmp(a));
+        counts.sort_unstable_by(|a, b| b.cmp(a));
         counts[0] += jokers;
 
-        match counts[0]{
+        match counts[0] {
             5..=10 => HandRanks::FiveOfAKind,
             4 => HandRanks::FourOfAKind,
             3 => {
-                if counts[1] == 2{
+                if counts[1] == 2 {
                     HandRanks::FullHouse
-                } else{
+                } else {
                     HandRanks::ThreeOfAKind
                 }
             }
             2 => {
-                if counts[1] == 2{
+                if counts[1] == 2 {
                     HandRanks::TwoPair
                 } else {
                     HandRanks::OnePair
                 }
             }
             1 => HandRanks::HighCard,
-            _ =>  unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -124,11 +126,10 @@ impl Hand {
         self.get_rank().to_rank()
     }
 
-    fn card_rank(&self, idx: usize) -> usize{
+    fn card_rank(&self, idx: usize) -> usize {
         self.cards[idx].to_rank()
     }
 }
-
 
 impl PartialOrd<Self> for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -143,7 +144,7 @@ impl Ord for Hand {
         }
         let mut candidate = self.to_rank().cmp(&other.to_rank());
         let mut i = 0;
-        while candidate == Ordering::Equal{
+        while candidate == Ordering::Equal {
             candidate = self.card_rank(i).cmp(&other.card_rank(i));
             i += 1;
         }
@@ -151,15 +152,14 @@ impl Ord for Hand {
     }
 }
 
-
-
 pub fn part_one(input: &str) -> Option<u32> {
     let mut hands = parse_input(input);
     hands.sort();
-    hands.iter().enumerate().fold(0, |acc, (rank, hand)| {
-        acc + hand.bid * (rank as u32 + 1)
-    }
-    ).into()
+    hands
+        .iter()
+        .enumerate()
+        .fold(0, |acc, (rank, hand)| acc + hand.bid * (rank as u32 + 1))
+        .into()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -168,10 +168,11 @@ pub fn part_two(input: &str) -> Option<u32> {
     //     assert_eq!(&0, hand.get_counts().get(&Card{value: 'J'}).unwrap_or(&0));
     // }
     hands.sort();
-    hands.iter().enumerate().fold(0, |acc, (rank, hand)| {
-        acc + hand.bid * (rank as u32 + 1)
-    }
-    ).into()
+    hands
+        .iter()
+        .enumerate()
+        .fold(0, |acc, (rank, hand)| acc + hand.bid * (rank as u32 + 1))
+        .into()
 }
 
 fn parse_input(input: &str) -> Vec<Hand> {

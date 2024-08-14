@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use num::integer::lcm;
+use std::collections::HashMap;
 
 advent_of_code::solution!(8);
 
@@ -35,14 +35,10 @@ pub fn part_two(input: &str) -> Option<u64> {
         .map(|start| find_cycle_length(start, &instructions, &map))
         .collect();
 
-    Some(cycle_lengths.into_iter().fold(1,lcm))
+    Some(cycle_lengths.into_iter().fold(1, lcm))
 }
 
-fn find_cycle_length(
-    start: &str,
-    instructions: &Vec<char>,
-    map: &HashMap<String, Node>,
-) -> u64 {
+fn find_cycle_length(start: &str, instructions: &Vec<char>, map: &HashMap<String, Node>) -> u64 {
     let mut steps: u64 = 0;
     let mut location = start;
     while !location.ends_with("Z") {

@@ -10,7 +10,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let sum= input
+    let sum = input
         .lines()
         .map(|l| read_digits_two(l))
         .map(|nums| get_number(&nums))
@@ -26,9 +26,9 @@ pub fn read_digits(input: &str) -> Vec<u32> {
         .collect()
 }
 
-pub fn read_digits_two(input: &str) -> Vec<u32>{
+pub fn read_digits_two(input: &str) -> Vec<u32> {
     let mut digits = vec![];
-    for i in 0..input.len(){
+    for i in 0..input.len() {
         match &input[i..] {
             l if l.starts_with("1") || l.starts_with("one") => digits.push(1),
             l if l.starts_with("2") || l.starts_with("two") => digits.push(2),
@@ -95,6 +95,6 @@ zoneight234
     #[test]
     fn test_read_digits_two() {
         let result = read_digits_two("one3ad931klanine");
-        assert_eq!(result, vec![1,3,9,3,1,9]);
+        assert_eq!(result, vec![1, 3, 9, 3, 1, 9]);
     }
 }
