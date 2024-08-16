@@ -13,9 +13,9 @@ struct Universe {
 impl Universe {
     fn new(map: Vec<Vec<char>>) -> Universe {
         Universe {
+            map: map.clone(),
             empty_rows: Universe::find_empty_rows(&map),
             empty_cols: Universe::find_empty_cols(&map),
-            map,
             expansion: 2,
         }
     }
@@ -23,21 +23,17 @@ impl Universe {
     fn find_empty_rows(map: &Vec<Vec<char>>) -> Vec<usize> {
         map.iter()
             .enumerate()
-            .map(|(i, l)| (i, l.iter().any(|x| x == &'#')))
-            .filter(|(_, has_galaxy)| !has_galaxy)
             .map(|(i, _)| i)
+            .filter(|i| map[*i].iter().all(|l| *l != '#'))
             .collect()
     }
 
     fn find_empty_cols(map: &Vec<Vec<char>>) -> Vec<usize> {
-        let mut empty_cols = Vec::new();
-        for col in 0..map[0].len() {
-            let column: Vec<char> = map.iter().map(|l| l[col]).filter(|x| x == &'#').collect();
-            if column.len() == 0 {
-                empty_cols.push(col);
-            }
-        }
-        empty_cols
+        map.iter()
+            .enumerate()
+            .map(|(i, _)| i)
+            .filter(|i| map.iter().all(|l| l[*i] != '#'))
+            .collect()
     }
 
     fn find_galaxies(&self) -> Vec<Galaxy> {
