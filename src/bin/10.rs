@@ -24,8 +24,6 @@ impl Sketch {
         let mut path = vec![];
         let mut current = self.find_start();
 
-        
-
         path
     }
 }
@@ -78,6 +76,7 @@ impl PipeType {
         }
     }
 
+    // Returns where you come out of after entering a pipe from a given direction
     fn next(&self, direction: (isize, isize)) -> Option<(isize, isize)> {
         if !self.valid(direction) {
             return None;
