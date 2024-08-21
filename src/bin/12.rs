@@ -8,7 +8,7 @@ struct SpringSchematic {
     sizes: Vec<usize>,
 }
 impl SpringSchematic {
-    fn combinations(&self) -> u32 {
+    fn combinations(&self) -> u64 {
         let line = self.groups.clone();
         let n = line.len();
         let m = self.sizes.len();
@@ -39,15 +39,35 @@ impl SpringSchematic {
 
         dp[0][0]
     }
+
+    fn part_two(&self) -> SpringSchematic {
+        let mut groups = self.groups.clone();
+        groups.push('?');
+
+        let mut new_groups: Vec<char> = vec![groups; 5].into_iter().flatten().collect();
+        new_groups.pop();
+        let new_sizes = vec![self.sizes.clone(); 5].into_iter().flatten().collect();
+
+        SpringSchematic {
+            groups: new_groups,
+            sizes: new_sizes,
+        }
+    }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<u64> {
     let result = parse_input(input);
     Some(result.iter().map(|x| x.combinations()).sum())
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u64> {
+    let result = parse_input(input);
+    let result = result
+        .iter()
+        .map(|s| s.part_two())
+        .map(|x| x.combinations())
+        .sum();
+    Some(result)
 }
 
 fn parse_input(input: &str) -> Vec<SpringSchematic> {
@@ -55,13 +75,7 @@ fn parse_input(input: &str) -> Vec<SpringSchematic> {
         .lines()
         .map(|line| {
             let parts: &str = line.split(" ").collect::<Vec<&str>>()[0];
-            let condition = parts
-                .split('.')
-                .map(|g| g.chars().collect())
-                .filter(|x: &Vec<char>| !x.is_empty())
-                .map(|x| vec![x, vec!['.']].concat())
-                .flatten()
-                .collect();
+            let condition = parts.chars().collect();
             let sizes = line.split(" ").collect::<Vec<&str>>()[1]
                 .split(',')
                 .filter_map(|s| s.parse::<usize>().ok())
@@ -87,7 +101,7 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(525152));
     }
 
     #[test]
