@@ -17,7 +17,7 @@ fn parse_input(input: &str) -> Vec<Vec<i32>> {
         .lines()
         .map(|l| {
             l.split_whitespace()
-                .map(|n| n.parse().unwrap())
+                .map(|n| n.parse::<i32>().unwrap())
                 .collect::<Vec<i32>>()
         })
         .collect::<Vec<Vec<i32>>>()
@@ -25,7 +25,7 @@ fn parse_input(input: &str) -> Vec<Vec<i32>> {
 
 fn extrapolate_forward(line: Vec<i32>) -> i32 {
     // Reduce to 0s and add the last number in each line
-    let mut data = vec![line.clone()];
+    let mut data = vec![line];
     while data.last().unwrap().iter().any(|&x| x != 0) {
         let last = data.last().unwrap();
         let new = last.windows(2).map(|w| w[1] - w[0]).collect();
@@ -72,7 +72,7 @@ mod tests {
     }
 
     #[test]
-    fn test_find_next() {
+    fn test_extrapolate_forward() {
         assert_eq!(extrapolate_forward(vec![0, 3, 6, 9, 12]), 15);
         assert_eq!(extrapolate_forward(vec![1, 2, 6, 10, 15, 21]), 28);
     }

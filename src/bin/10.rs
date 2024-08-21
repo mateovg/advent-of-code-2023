@@ -56,22 +56,10 @@ impl PipeType {
     // Returns if you can enter the pipe from a given direction.
     fn valid(&self, direction: (isize, isize)) -> bool {
         match direction {
-            (0, -1) => match self {
-                PipeType::NorthSouth | PipeType::NorthEast | PipeType::NorthWest => true,
-                _ => false,
-            },
-            (0, 1) => match self {
-                PipeType::NorthSouth | PipeType::SouthEast | PipeType::SouthWest => true,
-                _ => false,
-            },
-            (-1, 0) => match self {
-                PipeType::EastWest | PipeType::NorthEast | PipeType::SouthEast => true,
-                _ => false,
-            },
-            (1, 0) => match self {
-                PipeType::EastWest | PipeType::NorthWest | PipeType::SouthWest => true,
-                _ => false,
-            },
+            (0, -1) => matches!(self, PipeType::NorthSouth | PipeType::NorthEast | PipeType::NorthWest),
+            (0, 1) => matches!(self, PipeType::NorthSouth | PipeType::SouthEast | PipeType::SouthWest),
+            (-1, 0) => matches!(self, PipeType::EastWest | PipeType::NorthEast | PipeType::SouthEast),
+            (1, 0) => matches!(self, PipeType::EastWest | PipeType::NorthWest | PipeType::SouthWest),
             _ => false,
         }
     }
