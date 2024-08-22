@@ -46,6 +46,7 @@ impl Landscape {
         }
         diffs
     }
+
     fn new(input: &str) -> Landscape {
         let rows: Vec<Vec<u32>> = input
             .lines()
