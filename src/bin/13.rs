@@ -9,16 +9,8 @@ struct Landscape {
     rows: Vec<Vec<u32>>,
 }
 impl Landscape {
-    fn solve_one(&self) -> u32 {
-        let (v, h) = self.find_reflections(0);
-        if !v.is_empty() {
-            return v[0];
-        }
-        h[0] * 100
-    }
-
-    fn solve_two(&self) -> u32 {
-        let (v, h) = self.find_reflections(1);
+    fn solve(&self, diffs: u32) -> u32 {
+        let (v, h) = self.find_reflections(diffs);
         if !v.is_empty() {
             return v[0];
         }
@@ -26,20 +18,20 @@ impl Landscape {
     }
 
     fn find_reflections(&self, diffs: u32) -> (Vec<u32>, Vec<u32>) {
-        let h = Self::find_reflections_help(&self.rows, diffs);
-        let v = Self::find_reflections_help(&self.cols, diffs);
+        let h = Self::find_reflections_helper(&self.rows, diffs);
+        let v = Self::find_reflections_helper(&self.cols, diffs);
         (v, h)
     }
 
-    fn find_reflections_help(landscape: &Vec<Vec<u32>>, diffs: u32) -> Vec<u32> {
+    fn find_reflections_helper(landscape: &Vec<Vec<u32>>, diffs: u32) -> Vec<u32> {
+        // Helper for find_reflection, since we use it for vert and horizontal
         (1..landscape.len())
             .filter(|i| Self::diffs_from_reflection(landscape, *i) as u32 == diffs)
             .map(|i| i as u32)
             .collect()
     }
     fn diffs_from_reflection(landscape: &Vec<Vec<u32>>, mirror: usize) -> usize {
-        // Find how many spots need to be changed for that mirror
-        // to be valid. 0 means it's valid
+        // Find how many spots need to be changed for that mirror to be valid
         let mut diffs = 0;
         let length = mirror.min(landscape.len() - mirror);
 
@@ -55,46 +47,39 @@ impl Landscape {
         diffs
     }
     fn new(input: &str) -> Landscape {
-        let rows: Vec<Vec<u32>> = input.lines().
-            filter(|l| !l.is_empty()).
-            map(|l| {
-                l.chars().map(|c|
-                match c {
-                    '#' => 1,
-                    _ => 0,
-                }).collect()
-            }
-            ).collect();
+        let rows: Vec<Vec<u32>> = input
+            .lines()
+            .filter(|l| !l.is_empty())
+            .map(|l| {
+                l.chars()
+                    .map(|c| match c {
+                        '#' => 1,
+                        _ => 0,
+                    })
+                    .collect()
+            })
+            .collect();
 
-        let num_cols = rows[0].len();
-        let cols = (0..num_cols).map(|col| {
-            (0..rows.len())
-                .map(|row| rows[row][col])
-                .collect()
-        }).collect();
+        let cols = (0..rows[0].len())
+            .map(|col| (0..rows.len()).map(|row| rows[row][col]).collect())
+            .collect();
 
-        Landscape {
-            rows,
-            cols,
-        }
+        Landscape { rows, cols }
     }
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
     let landscapes = parse_input(input);
-    Some(landscapes.iter().map(|l| l.solve_one()).sum())
+    Some(landscapes.iter().map(|l| l.solve(0)).sum())
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
     let landscapes = parse_input(input);
-    Some(landscapes.iter().map(|l| l.solve_two()).sum())
+    Some(landscapes.iter().map(|l| l.solve(1)).sum())
 }
 
 fn parse_input(input: &str) -> Vec<Landscape> {
-    input
-        .split("\n\r\n")
-        .map(Landscape::new)
-        .collect()
+    input.split("\n\n").map(Landscape::new).collect()
 }
 
 #[cfg(test)]
