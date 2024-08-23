@@ -6,7 +6,6 @@ struct Dish {
     rows: Vec<Vec<char>>,
     cols: Vec<Vec<char>>,
 }
-
 impl Dish {
     fn solve(&mut self, direction: (isize, isize)) -> Option<u32> {
         self.roll(direction);
@@ -14,10 +13,23 @@ impl Dish {
     }
 
     fn solve_two(&mut self) -> Option<u32> {
-        // Find when it repeats itself
-        // let mut states = HashSet::new();
+        let mut cycles = 0;
+        let mut states = HashSet::new();
 
-        for _ in 0..1_000_000_000 {
+        loop {
+            if states.contains(&self.get_state()) {
+                break;
+            }
+            states.insert(self.get_state());
+            self.roll_cycle();
+            cycles += 1;
+        }
+
+        dbg!(cycles);
+
+        let cycles_left = 1_000_000_000 % cycles;
+
+        for _ in 0..cycles_left {
             self.roll_cycle();
         }
         Some(self.weight())
@@ -25,15 +37,22 @@ impl Dish {
 
     fn roll_cycle(&mut self) -> () {
         self.roll((0, 1));
-        self.roll((-1, 0));
-        self.roll((0, -1));
         self.roll((1, 0));
+        self.roll((0, -1));
+        self.roll((-1, 0));
     }
 
     fn roll(&mut self, direction: (isize, isize)) -> () {
         let (row_diff, col_diff) = direction;
-        self.rows = self.roll_helper(row_diff, &self.rows);
-        self.cols = self.roll_helper(col_diff, &self.cols);
+        if row_diff != 0 {
+            self.rows = self.roll_helper(row_diff, &self.rows);
+            self.cols = transpose(&self.rows);
+        } else {
+            self.cols = self.roll_helper(col_diff, &self.cols);
+            self.rows = transpose(&self.cols);
+        }
+
+        assert_eq!(self.rows, transpose(&self.cols));
     }
 
     fn roll_helper(&self, direction: isize, section: &Vec<Vec<char>>) -> Vec<Vec<char>> {
@@ -61,6 +80,10 @@ impl Dish {
                 new_sec
             })
             .collect()
+    }
+
+    fn get_state(&self) -> Vec<Vec<char>> {
+        self.rows.clone()
     }
 
     fn weight(&self) -> u32 {
@@ -102,6 +125,12 @@ fn parse_input(input: &str) -> Dish {
         .collect();
 
     Dish { rows, cols }
+}
+
+fn transpose(v: &Vec<Vec<char>>) -> Vec<Vec<char>> {
+    (0..v[0].len())
+        .map(|col| (0..v.len()).map(|row| v[row][col]).collect())
+        .collect()
 }
 
 #[cfg(test)]
