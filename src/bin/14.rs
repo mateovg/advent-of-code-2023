@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 advent_of_code::solution!(14);
 
@@ -13,26 +13,31 @@ impl Dish {
     }
 
     fn solve_two(&mut self) -> Option<u32> {
-        let mut cycles = 0;
-        let mut states = HashSet::new();
-
-        loop {
-            if states.contains(&self.get_state()) {
-                break;
-            }
-            states.insert(self.get_state());
-            self.roll_cycle();
-            cycles += 1;
-        }
-
-        dbg!(cycles);
-
-        let cycles_left = 1_000_000_000 % cycles;
-
+        let cycles_left = self.find_cycles_left();
         for _ in 0..cycles_left {
             self.roll_cycle();
         }
         Some(self.weight())
+    }
+
+    fn find_cycles_left(&mut self) -> u32 {
+        let (start, cycles) = self.find_cycle_start();
+        let cycle_length = cycles - start;
+        (1_000_000_000 - cycles) % (cycle_length)
+    }
+
+    fn find_cycle_start(&mut self) -> (u32, u32) {
+        let mut states = HashMap::new();
+
+        for cycles in 1..1_000_000_000 {
+            self.roll_cycle();
+            let current_state = self.get_state();
+            if let Some(start) = states.get(&current_state) {
+                return (*start as u32, cycles as u32);
+            }
+            states.insert(current_state.clone(), cycles);
+        }
+        (0, 1_000_000_000)
     }
 
     fn roll_cycle(&mut self) -> () {
@@ -42,8 +47,7 @@ impl Dish {
         self.roll((-1, 0));
     }
 
-    fn roll(&mut self, direction: (isize, isize)) -> () {
-        let (row_diff, col_diff) = direction;
+    fn roll(&mut self, (row_diff, col_diff): (isize, isize)) -> () {
         if row_diff != 0 {
             self.rows = self.roll_helper(row_diff, &self.rows);
             self.cols = transpose(&self.rows);
