@@ -56,10 +56,22 @@ impl PipeType {
     // Returns if you can enter the pipe from a given direction.
     fn valid(&self, direction: (isize, isize)) -> bool {
         match direction {
-            (0, -1) => matches!(self, PipeType::NorthSouth | PipeType::NorthEast | PipeType::NorthWest),
-            (0, 1) => matches!(self, PipeType::NorthSouth | PipeType::SouthEast | PipeType::SouthWest),
-            (-1, 0) => matches!(self, PipeType::EastWest | PipeType::NorthEast | PipeType::SouthEast),
-            (1, 0) => matches!(self, PipeType::EastWest | PipeType::NorthWest | PipeType::SouthWest),
+            (0, -1) => matches!(
+                self,
+                PipeType::NorthSouth | PipeType::NorthEast | PipeType::NorthWest
+            ),
+            (0, 1) => matches!(
+                self,
+                PipeType::NorthSouth | PipeType::SouthEast | PipeType::SouthWest
+            ),
+            (-1, 0) => matches!(
+                self,
+                PipeType::EastWest | PipeType::NorthEast | PipeType::SouthEast
+            ),
+            (1, 0) => matches!(
+                self,
+                PipeType::EastWest | PipeType::NorthWest | PipeType::SouthWest
+            ),
             _ => false,
         }
     }
@@ -104,11 +116,12 @@ pub fn part_one(input: &str) -> Option<u32> {
     // dbg!(&sketch);
     let path = sketch.follow_path();
     dbg!(&path);
-    Some(path.len() as u32 / 2)
+    Some(path.len() as u32 / 2);
+    todo!();
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    todo!()
 }
 
 fn parse_input(input: &str) -> Sketch {
@@ -135,7 +148,7 @@ mod tests {
     #[test]
     fn test_part_one() {
         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, Some(8));
+        assert_eq!(result, None);
     }
 
     #[test]

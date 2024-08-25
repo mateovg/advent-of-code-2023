@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::collections::HashSet;
 
 advent_of_code::solution!(4);
@@ -77,7 +76,8 @@ fn parse_line(line: &str) -> Game {
         .split_whitespace()
         .nth(1)
         .unwrap();
-    let id = number.parse().unwrap_or(0);
+    dbg!(&number);
+    let id = number.parse().unwrap();
     let winning_numbers = line.split(&[':', '|']).nth(1).unwrap();
     let player_numbers = line.rsplit('|').nth(0).unwrap();
 

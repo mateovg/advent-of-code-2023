@@ -33,6 +33,7 @@ fn extrapolate_forward(line: Vec<i32>) -> i32 {
     }
     data.iter()
         .rev()
+        .filter(|&x| !x.is_empty())
         .fold(0, |acc, seq| acc + seq.last().unwrap())
 }
 
@@ -44,6 +45,7 @@ fn extrapolate_backward(line: Vec<i32>) -> i32 {
         let new = last.windows(2).map(|w| w[0] - w[1]).collect();
         data.push(new);
     }
+    dbg!(&data);
     data.iter()
         .rev()
         .fold(0, |acc, seq| acc + seq.first().unwrap())
@@ -74,6 +76,6 @@ mod tests {
     #[test]
     fn test_extrapolate_forward() {
         assert_eq!(extrapolate_forward(vec![0, 3, 6, 9, 12]), 15);
-        assert_eq!(extrapolate_forward(vec![1, 2, 6, 10, 15, 21]), 28);
+        assert_eq!(extrapolate_forward(vec![1, 3, 6, 10, 15, 21]), 28);
     }
 }

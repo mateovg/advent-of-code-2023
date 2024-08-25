@@ -1,5 +1,3 @@
-use rayon::vec;
-
 advent_of_code::solution!(12);
 
 #[derive(Debug)]

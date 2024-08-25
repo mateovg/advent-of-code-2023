@@ -19,7 +19,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         location = match direction {
             'L' => map[&location].left.clone(),
             'R' => map[&location].right.clone(),
-            _ => !unreachable!(),
+            _ => unreachable!(),
         };
         steps += 1;
     }
@@ -46,7 +46,7 @@ fn find_cycle_length(start: &str, instructions: &Vec<char>, map: &HashMap<String
         location = match direction {
             'L' => &map[location].left,
             'R' => &map[location].right,
-            _ => !unreachable!(),
+            _ => unreachable!(),
         };
         steps += 1
     }

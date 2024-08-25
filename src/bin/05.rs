@@ -1,5 +1,5 @@
 use rayon::prelude::*;
-use std::ops::{Range, RangeBounds};
+use std::ops::Range;
 
 advent_of_code::solution!(5);
 
