@@ -1,10 +1,8 @@
-use std::{
-    collections::{HashMap, HashSet},
-    isize,
-};
+use std::collections::{HashMap, HashSet};
 
 use itertools::Itertools;
-
+use rayon::iter::IntoParallelRefIterator;
+use rayon::iter::ParallelIterator;
 advent_of_code::solution!(16);
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
@@ -107,6 +105,7 @@ impl Beam {
     }
 }
 
+#[derive(Clone)]
 struct Contraption {
     height: usize,
     width: usize,
@@ -160,17 +159,6 @@ impl Contraption {
         while !self.beams.is_empty() {
             self.step();
         }
-        let tiles: Vec<(isize, isize)> = self.energized.iter().map(|b| b.loc).unique().collect();
-        // for y in 0..self.width {
-        //     for x in 0..self.height {
-        //         if tiles.contains(&(x as isize, y as isize)) {
-        //             print!("#");
-        //         } else {
-        //             print!(".");
-        //         }
-        //     }
-        //     println!("");
-        // }
         Some(self.energized.iter().map(|b| b.loc).unique().count() as u32)
     }
 
@@ -253,16 +241,22 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let mut contraption = parse_input(input);
+    let contraption = parse_input(input);
     let (w, h) = (contraption.width, contraption.height);
-    (0..w)
+    let starts: Vec<_> = (0..w)
         .cartesian_product(0..h)
+        .map(|(x, y)| (x, y))
         .filter(|(x, y)| *x == 0 || *x == w - 1 || *y == 0 || *y == h - 1)
+        .collect();
+
+    starts
+        .par_iter()
         .map(|(x, y)| {
-            let beams = contraption.init_beams((x as isize, y as isize));
+            let beams = contraption.init_beams((*x as isize, *y as isize));
             beams
                 .iter()
                 .map(|beam| {
+                    let mut contraption = contraption.clone();
                     contraption.beams = vec![*beam];
                     contraption.energized = HashSet::new();
                     contraption.energized_tiles().unwrap()
