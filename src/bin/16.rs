@@ -1,8 +1,13 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    isize,
+};
+
+use itertools::Itertools;
 
 advent_of_code::solution!(16);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 enum Direction {
     Up,
     Down,
@@ -49,22 +54,22 @@ impl MirrorType {
                 _ => vec![Direction::Left, Direction::Right],
             },
             MirrorType::Slash => match dir {
-                Direction::Up => vec![Direction::Left],
-                Direction::Down => vec![Direction::Right],
-                Direction::Left => vec![Direction::Up],
-                Direction::Right => vec![Direction::Down],
-            },
-            MirrorType::Backslash => match dir {
                 Direction::Up => vec![Direction::Right],
                 Direction::Down => vec![Direction::Left],
                 Direction::Left => vec![Direction::Down],
                 Direction::Right => vec![Direction::Up],
             },
+            MirrorType::Backslash => match dir {
+                Direction::Up => vec![Direction::Left],
+                Direction::Down => vec![Direction::Right],
+                Direction::Left => vec![Direction::Up],
+                Direction::Right => vec![Direction::Down],
+            },
         }
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 struct Beam {
     loc: (isize, isize),
     dir: Direction,
@@ -72,10 +77,9 @@ struct Beam {
 impl Beam {
     fn step(&self) -> Beam {
         let (dx, dy) = self.dir.to_tuple();
-        Beam {
-            loc: (self.loc.0 + dx, self.loc.1 + dy),
-            dir: self.dir,
-        }
+        let loc = (self.loc.0 + dx, self.loc.1 + dy);
+        let dir = self.dir;
+        Beam { loc, dir }
     }
 
     fn reflect(&self, mirror: &MirrorType) -> Vec<Beam> {
@@ -88,6 +92,19 @@ impl Beam {
             })
             .collect()
     }
+
+    fn in_bounds(&self, height: usize, width: usize) -> bool {
+        let (x, y) = self.loc;
+        let out = x < 0 || x >= width as isize || y < 0 || y >= height as isize;
+        !out
+    }
+
+    fn default_beam() -> Beam {
+        Beam {
+            loc: (0, 0),
+            dir: Direction::Right,
+        }
+    }
 }
 
 struct Contraption {
@@ -95,14 +112,17 @@ struct Contraption {
     width: usize,
     beams: Vec<Beam>,
     mirrors: HashMap<(isize, isize), MirrorType>,
-    energized: HashSet<(isize, isize)>,
+    energized: HashSet<Beam>,
 }
 impl Contraption {
     fn new(height: usize, width: usize, mirrors: HashMap<(isize, isize), MirrorType>) -> Self {
-        let beams = vec![Beam {
-            loc: (0, 0),
-            dir: Direction::Right,
-        }];
+        let beam = Beam::default_beam();
+        let beams = if let Some(mirror) = mirrors.get(&beam.loc) {
+            beam.reflect(mirror)
+        } else {
+            vec![beam]
+        };
+
         Contraption {
             height,
             width,
@@ -112,41 +132,145 @@ impl Contraption {
         }
     }
 
-    fn step(&mut self) -> () {
-        dbg!(&self.beams);
-        self.beams
-            .iter_mut()
-            .filter(|beam| {
-                beam.loc.0 >= 0
-                    && beam.loc.0 < self.width as isize
-                    && beam.loc.1 >= 0
-                    && beam.loc.1 < self.height as isize
-            })
-            .map(|beam| {
-                if let Some(mirror) = self.mirrors.get(&beam.loc) {
-                    beam.reflect(mirror)
-                } else {
-                    vec![*beam]
-                }
-            })
-            .map(|mut beam| beam.iter_mut().map(|b| b.step()).collect::<Vec<Beam>>())
+    fn reflect_beam(&self, beam: Beam) -> Vec<Beam> {
+        if let Some(mirror) = self.mirrors.get(&beam.loc) {
+            beam.reflect(mirror)
+        } else {
+            vec![beam]
+        }
+    }
+
+    fn step(&mut self) {
+        self.beams.iter().for_each(|b| {
+            self.energized.insert(*b);
+        });
+
+        self.beams = self
+            .beams
+            .iter()
+            .map(|&b| b.step())
+            .map(|b| self.reflect_beam(b))
             .flatten()
-            .for_each(|beam: Beam| {
-                self.energized.insert(beam.loc);
-            });
+            .filter(|beam| beam.in_bounds(self.height, self.width))
+            .filter(|beam| !self.energized.contains(beam))
+            .collect();
+    }
+
+    fn energized_tiles(&mut self) -> Option<u32> {
+        while !self.beams.is_empty() {
+            self.step();
+        }
+        let tiles: Vec<(isize, isize)> = self.energized.iter().map(|b| b.loc).unique().collect();
+        // for y in 0..self.width {
+        //     for x in 0..self.height {
+        //         if tiles.contains(&(x as isize, y as isize)) {
+        //             print!("#");
+        //         } else {
+        //             print!(".");
+        //         }
+        //     }
+        //     println!("");
+        // }
+        Some(self.energized.iter().map(|b| b.loc).unique().count() as u32)
+    }
+
+    fn init_beams(&self, loc: (isize, isize)) -> Vec<Beam> {
+        let beams = self.init_beam(loc);
+        beams
+            .iter()
+            .map(|beam| self.reflect_beam(*beam))
+            .flatten()
+            .collect()
+    }
+
+    fn init_beam(&self, loc: (isize, isize)) -> Vec<Beam> {
+        let (width, height) = (self.width as isize - 1, self.height as isize - 1);
+        match loc {
+            l if l == (0, 0) => vec![
+                Beam {
+                    loc,
+                    dir: Direction::Right,
+                },
+                Beam {
+                    loc,
+                    dir: Direction::Down,
+                },
+            ],
+            l if l == (height, 0) => vec![
+                Beam {
+                    loc,
+                    dir: Direction::Left,
+                },
+                Beam {
+                    loc,
+                    dir: Direction::Down,
+                },
+            ],
+            l if l == (0, height) => vec![
+                Beam {
+                    loc,
+                    dir: Direction::Right,
+                },
+                Beam {
+                    loc,
+                    dir: Direction::Up,
+                },
+            ],
+            l if l == (height, width) => vec![
+                Beam {
+                    loc,
+                    dir: Direction::Left,
+                },
+                Beam {
+                    loc,
+                    dir: Direction::Up,
+                },
+            ],
+            (0, _) => vec![Beam {
+                loc,
+                dir: Direction::Right,
+            }],
+            (_, 0) => vec![Beam {
+                loc,
+                dir: Direction::Down,
+            }],
+            l if l.0 == width => vec![Beam {
+                loc,
+                dir: Direction::Up,
+            }],
+            l if l.1 == height => vec![Beam {
+                loc,
+                dir: Direction::Left,
+            }],
+            (_, _) => vec![],
+        }
     }
 }
-
 pub fn part_one(input: &str) -> Option<u32> {
     let mut contraption = parse_input(input);
-    for _ in 0..10 {
-        contraption.step();
-    }
-    Some(contraption.energized.len() as u32)
+    // while contraption.beams.len() > 0 {
+    contraption.energized_tiles()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let mut contraption = parse_input(input);
+    let (w, h) = (contraption.width, contraption.height);
+    (0..w)
+        .cartesian_product(0..h)
+        .filter(|(x, y)| *x == 0 || *x == w - 1 || *y == 0 || *y == h - 1)
+        .map(|(x, y)| {
+            let beams = contraption.init_beams((x as isize, y as isize));
+            beams
+                .iter()
+                .map(|beam| {
+                    contraption.beams = vec![*beam];
+                    contraption.energized = HashSet::new();
+                    contraption.energized_tiles().unwrap()
+                })
+                .max()
+        })
+        .flatten()
+        .max()
 }
 
 fn parse_input(input: &str) -> Contraption {
@@ -180,7 +304,7 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(51));
     }
 
     #[test]
