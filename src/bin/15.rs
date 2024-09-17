@@ -4,11 +4,11 @@ advent_of_code::solution!(15);
 
 #[derive(Debug, Clone)]
 struct Instruction {
-    box_number: u32,
+    box_number: usize,
     label: String,
     operation: char,
-    focus: Option<u32>,
-    hash: u32,
+    focus: Option<usize>,
+    hash: usize,
 }
 impl Instruction {
     fn new(input: &str) -> Instruction {
@@ -35,11 +35,11 @@ impl Instruction {
     }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     Some(parse_input(input).iter().map(|ins| ins.hash).sum())
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     Some(
         parse_map(parse_input(input))
             .iter()
@@ -47,15 +47,15 @@ pub fn part_two(input: &str) -> Option<u32> {
                 lenses
                     .iter()
                     .enumerate()
-                    .map(|(i, ins)| (box_number + 1) * (i as u32 + 1) * ins.focus.unwrap())
-                    .sum::<u32>()
+                    .map(|(i, ins)| (box_number + 1) * (i as usize + 1) * ins.focus.unwrap())
+                    .sum::<usize>()
             })
             .sum(),
     )
 }
 
-fn parse_map(input: Vec<Instruction>) -> HashMap<u32, Vec<Instruction>> {
-    let mut map: HashMap<u32, Vec<Instruction>> = HashMap::new();
+fn parse_map(input: Vec<Instruction>) -> HashMap<usize, Vec<Instruction>> {
+    let mut map: HashMap<usize, Vec<Instruction>> = HashMap::new();
     for ins in input {
         match ins.operation {
             '-' => {
@@ -89,9 +89,9 @@ fn parse_input(input: &str) -> Vec<Instruction> {
         .collect()
 }
 
-fn hash_instruction(input: &str) -> u32 {
+fn hash_instruction(input: &str) -> usize {
     input.as_bytes().iter().fold(0, |hash, curr| {
-        let hash = hash + *curr as u32;
+        let hash = hash + *curr as usize;
         let hash = hash * 17;
         hash % 256
     })

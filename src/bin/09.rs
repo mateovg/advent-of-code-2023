@@ -1,29 +1,29 @@
 advent_of_code::solution!(9);
 
-pub fn part_one(input: &str) -> Option<i32> {
+pub fn part_one(input: &str) -> Option<isize> {
     let data = parse_input(input);
     let sum = data.iter().map(|d| extrapolate_forward(d.clone())).sum();
     Some(sum)
 }
 
-pub fn part_two(input: &str) -> Option<i32> {
+pub fn part_two(input: &str) -> Option<isize> {
     let data = parse_input(input);
     let sum = data.iter().map(|d| extrapolate_backward(d.clone())).sum();
     Some(sum)
 }
 
-fn parse_input(input: &str) -> Vec<Vec<i32>> {
+fn parse_input(input: &str) -> Vec<Vec<isize>> {
     input
         .lines()
         .map(|l| {
             l.split_whitespace()
-                .map(|n| n.parse::<i32>().unwrap())
-                .collect::<Vec<i32>>()
+                .map(|n| n.parse::<isize>().unwrap())
+                .collect::<Vec<isize>>()
         })
-        .collect::<Vec<Vec<i32>>>()
+        .collect::<Vec<Vec<isize>>>()
 }
 
-fn extrapolate_forward(line: Vec<i32>) -> i32 {
+fn extrapolate_forward(line: Vec<isize>) -> isize {
     // Reduce to 0s and add the last number in each line
     let mut data = vec![line];
     while data.last().unwrap().iter().any(|&x| x != 0) {
@@ -37,7 +37,7 @@ fn extrapolate_forward(line: Vec<i32>) -> i32 {
         .fold(0, |acc, seq| acc + seq.last().unwrap())
 }
 
-fn extrapolate_backward(line: Vec<i32>) -> i32 {
+fn extrapolate_backward(line: Vec<isize>) -> isize {
     // Reduce to 0s and add the last number in each line
     let mut data = vec![line.clone()];
     while data.last().unwrap().iter().any(|&x| x != 0) {

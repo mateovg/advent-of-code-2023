@@ -9,7 +9,7 @@ struct Node {
     right: String,
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let (instructions, map) = parse_input(input);
     let mut steps = 0;
     let mut location = "AAA".to_string();

@@ -55,7 +55,7 @@ impl HandRanks {
 #[derive(PartialEq, Eq, Debug)]
 struct Hand {
     cards: Vec<Card>,
-    bid: u32,
+    bid: usize,
 }
 impl Hand {
     fn from_string(s: &str) -> Hand {
@@ -66,7 +66,7 @@ impl Hand {
             .chars()
             .map(|c| Card { value: c })
             .collect();
-        let bid: u32 = parts.next().unwrap().parse().unwrap();
+        let bid: usize = parts.next().unwrap().parse().unwrap();
         Hand { cards, bid }
     }
     fn from_string_jokers(s: &str) -> Hand {
@@ -82,7 +82,7 @@ impl Hand {
                 Card { value: c }
             })
             .collect();
-        let bid: u32 = parts.next().unwrap().parse().unwrap();
+        let bid: usize = parts.next().unwrap().parse().unwrap();
         Hand { cards, bid }
     }
     fn get_counts(&self) -> HashMap<Card, usize> {
@@ -152,17 +152,17 @@ impl Ord for Hand {
     }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let mut hands = parse_input(input);
     hands.sort();
     hands
         .iter()
         .enumerate()
-        .fold(0, |acc, (rank, hand)| acc + hand.bid * (rank as u32 + 1))
+        .fold(0, |acc, (rank, hand)| acc + hand.bid * (rank as usize + 1))
         .into()
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let mut hands = parse_input_two(input);
     // for hand in &hands{
     //     assert_eq!(&0, hand.get_counts().get(&Card{value: 'J'}).unwrap_or(&0));
@@ -171,7 +171,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     hands
         .iter()
         .enumerate()
-        .fold(0, |acc, (rank, hand)| acc + hand.bid * (rank as u32 + 1))
+        .fold(0, |acc, (rank, hand)| acc + hand.bid * (rank as usize + 1))
         .into()
 }
 

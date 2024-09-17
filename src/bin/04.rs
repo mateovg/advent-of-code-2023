@@ -2,12 +2,12 @@ use std::collections::HashSet;
 
 advent_of_code::solution!(4);
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let result = parse_input(input).iter().map(|g| g.get_score()).sum();
     Some(result)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let games: Vec<ScratchCard> = parse_input(input)
         .iter()
         .map(|g| ScratchCard {
@@ -33,33 +33,33 @@ pub fn part_two(input: &str) -> Option<u32> {
 
 #[derive(PartialEq, Eq, Debug)]
 struct Game {
-    id: u32,
-    winning_numbers: HashSet<u32>,
-    player_numbers: HashSet<u32>,
+    id: usize,
+    winning_numbers: HashSet<usize>,
+    player_numbers: HashSet<usize>,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug)]
 struct ScratchCard {
-    id: u32,
-    wins: u32,
-    copies: u32,
+    id: usize,
+    wins: usize,
+    copies: usize,
 }
 
 impl Game {
-    fn get_wins(&self) -> u32 {
+    fn get_wins(&self) -> usize {
         self.player_numbers
             .iter()
             .filter(|n| self.winning_numbers.contains(&n))
-            .collect::<Vec<&u32>>()
-            .len() as u32
+            .collect::<Vec<&usize>>()
+            .len() as usize
     }
 
-    fn get_score(&self) -> u32 {
+    fn get_score(&self) -> usize {
         let wins = self.get_wins();
         match wins {
             0 => 0,
             1 => 1,
-            n => u32::pow(2, n - 1),
+            n => usize::pow(2, n - 1),
         }
     }
 }
@@ -83,13 +83,13 @@ fn parse_line(line: &str) -> Game {
 
     let winning_numbers = winning_numbers
         .split_whitespace()
-        .filter_map(|n| Some(n.parse::<u32>()))
+        .filter_map(|n| Some(n.parse::<usize>()))
         .map(|n| n.unwrap())
         .collect();
 
     let player_numbers = player_numbers
         .split_whitespace()
-        .filter_map(|n| Some(n.parse::<u32>()))
+        .filter_map(|n| Some(n.parse::<usize>()))
         .map(|n| n.unwrap())
         .collect();
 

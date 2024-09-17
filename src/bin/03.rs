@@ -4,7 +4,7 @@ use std::ops::Range;
 
 advent_of_code::solution!(3);
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let schematic = parse_input(input);
     schematic
         .iter()
@@ -13,16 +13,16 @@ pub fn part_one(input: &str) -> Option<u32> {
             EngineSymbolValue::Number(n) => Some(n),
             _ => None,
         })
-        .sum::<u32>()
+        .sum::<usize>()
         .into()
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let schematic = parse_input(input);
     schematic
         .iter()
         .filter_map(|s| gear_ratio(s, &schematic))
-        .sum::<u32>()
+        .sum::<usize>()
         .into()
 }
 
@@ -43,7 +43,7 @@ enum EngineSymbolType {
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 enum EngineSymbolValue {
     Symbol(char),
-    Number(u32),
+    Number(usize),
 }
 
 fn parse_input(input: &str) -> HashSet<EngineSymbol> {
@@ -103,12 +103,12 @@ fn is_adj(part: &EngineSymbol, schematic: &HashSet<EngineSymbol>) -> Option<Engi
     None
 }
 
-fn gear_ratio(part: &EngineSymbol, schematic: &HashSet<EngineSymbol>) -> Option<u32> {
+fn gear_ratio(part: &EngineSymbol, schematic: &HashSet<EngineSymbol>) -> Option<usize> {
     if let EngineSymbolValue::Symbol('*') = part.value {
         let x_range = part.position.start.saturating_sub(1)..=part.position.end;
         let y_range = part.line.saturating_sub(1)..=part.line + 1;
 
-        let adjacent_numbers: Vec<u32> = schematic
+        let adjacent_numbers: Vec<usize> = schematic
             .iter()
             .filter(|s| s.symbol_type == EngineSymbolType::Number)
             .filter(|s| {

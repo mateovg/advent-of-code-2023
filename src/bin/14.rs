@@ -7,12 +7,12 @@ struct Dish {
     cols: Vec<Vec<char>>,
 }
 impl Dish {
-    fn solve(&mut self, direction: (isize, isize)) -> Option<u32> {
+    fn solve(&mut self, direction: (isize, isize)) -> Option<usize> {
         self.roll(direction);
         Some(self.weight())
     }
 
-    fn solve_two(&mut self) -> Option<u32> {
+    fn solve_two(&mut self) -> Option<usize> {
         let cycles_left = self.find_cycles_left();
         for _ in 0..cycles_left {
             self.roll_cycle();
@@ -20,20 +20,20 @@ impl Dish {
         Some(self.weight())
     }
 
-    fn find_cycles_left(&mut self) -> u32 {
+    fn find_cycles_left(&mut self) -> usize {
         let (start, cycles) = self.find_cycle_start();
         let cycle_length = cycles - start;
         (1_000_000_000 - cycles) % (cycle_length)
     }
 
-    fn find_cycle_start(&mut self) -> (u32, u32) {
+    fn find_cycle_start(&mut self) -> (usize, usize) {
         let mut states = HashMap::new();
 
         for cycles in 1..1_000_000_000 {
             self.roll_cycle();
             let current_state = self.get_state();
             if let Some(start) = states.get(&current_state) {
-                return (*start as u32, cycles as u32);
+                return (*start as usize, cycles as usize);
             }
             states.insert(current_state.clone(), cycles);
         }
@@ -90,7 +90,7 @@ impl Dish {
         self.rows.clone()
     }
 
-    fn weight(&self) -> u32 {
+    fn weight(&self) -> usize {
         let height = self.cols.len();
         self.cols
             .iter()
@@ -103,16 +103,16 @@ impl Dish {
                     })
                     .sum::<usize>()
             })
-            .sum::<usize>() as u32
+            .sum::<usize>() as usize
     }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let mut dish = parse_input(input);
     dish.solve((0, 1))
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let mut dish = parse_input(input);
     dish.solve_two()
 }

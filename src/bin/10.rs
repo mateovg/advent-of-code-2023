@@ -111,16 +111,16 @@ impl PipeType {
     }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let sketch = parse_input(input);
     // dbg!(&sketch);
     let path = sketch.follow_path();
     dbg!(&path);
-    Some(path.len() as u32 / 2);
+    Some(path.len() as usize / 2);
     None
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     None
 }
 

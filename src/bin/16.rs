@@ -155,11 +155,11 @@ impl Contraption {
             .collect();
     }
 
-    fn energized_tiles(&mut self) -> Option<u32> {
+    fn energized_tiles(&mut self) -> Option<usize> {
         while !self.beams.is_empty() {
             self.step();
         }
-        Some(self.energized.iter().map(|b| b.loc).unique().count() as u32)
+        Some(self.energized.iter().map(|b| b.loc).unique().count() as usize)
     }
 
     fn init_beams(&self, loc: (isize, isize)) -> Vec<Beam> {
@@ -234,13 +234,13 @@ impl Contraption {
         }
     }
 }
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let mut contraption = parse_input(input);
     // while contraption.beams.len() > 0 {
     contraption.energized_tiles()
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let contraption = parse_input(input);
     let (w, h) = (contraption.width, contraption.height);
     let starts: Vec<_> = (0..w)

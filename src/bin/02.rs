@@ -1,8 +1,8 @@
-use std::i32;
+use std::isize;
 
 advent_of_code::solution!(2);
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let result = parse_input(input)
         .iter()
         .filter(|g| g.valid())
@@ -11,7 +11,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(result)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let games = parse_input(input);
     let result = games
         .iter()
@@ -22,12 +22,12 @@ pub fn part_two(input: &str) -> Option<u32> {
 }
 
 #[derive(Debug, PartialEq)]
-struct Game(u32, Vec<(i32, i32, i32)>);
+struct Game(usize, Vec<(isize, isize, isize)>);
 impl Game {
     fn new(input: &str) -> Game {
         let (id_split, round_split) = input.split_once(':').unwrap();
 
-        let id = id_split[5..].parse::<u32>().unwrap();
+        let id = id_split[5..].parse::<usize>().unwrap();
         let rounds = round_split
             .split(';')
             .map(|round| {
@@ -35,7 +35,7 @@ impl Game {
                 round.split(',').for_each(|item| {
                     let parts: Vec<&str> = item.trim().split_whitespace().collect();
                     let color = parts[1].chars().next().unwrap();
-                    let count = parts[0].parse::<i32>().unwrap();
+                    let count = parts[0].parse::<isize>().unwrap();
                     match color {
                         'r' => round_data.0 = count,
                         'g' => round_data.1 = count,
@@ -59,14 +59,14 @@ impl Game {
         true
     }
 
-    fn min_cubes(&self) -> (i32, i32, i32) {
+    fn min_cubes(&self) -> (isize, isize, isize) {
         self.1.iter().fold((0, 0, 0), |acc, s| {
             (acc.0.max(s.0), acc.1.max(s.1), acc.2.max(s.2))
         })
     }
 
-    fn power_set(set: (i32, i32, i32)) -> u32 {
-        (set.0 * set.1 * set.2) as u32
+    fn power_set(set: (isize, isize, isize)) -> usize {
+        (set.0 * set.1 * set.2) as usize
     }
 }
 

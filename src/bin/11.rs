@@ -8,7 +8,7 @@ struct Universe {
     map: Vec<Vec<char>>,
     empty_rows: Vec<usize>,
     empty_cols: Vec<usize>,
-    expansion: i32,
+    expansion: isize,
 }
 impl Universe {
     fn new(map: Vec<Vec<char>>) -> Universe {

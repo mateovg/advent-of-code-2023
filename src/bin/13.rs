@@ -5,11 +5,11 @@ advent_of_code::solution!(13);
 // pattern's horizontal line has `4` rows above it, a total of `*405*`.
 #[derive(Debug)]
 struct Landscape {
-    cols: Vec<Vec<u32>>,
-    rows: Vec<Vec<u32>>,
+    cols: Vec<Vec<usize>>,
+    rows: Vec<Vec<usize>>,
 }
 impl Landscape {
-    fn solve(&self, diffs: u32) -> u32 {
+    fn solve(&self, diffs: usize) -> usize {
         let (v, h) = self.find_reflections(diffs);
         if !v.is_empty() {
             return v[0];
@@ -17,20 +17,20 @@ impl Landscape {
         h[0] * 100
     }
 
-    fn find_reflections(&self, diffs: u32) -> (Vec<u32>, Vec<u32>) {
+    fn find_reflections(&self, diffs: usize) -> (Vec<usize>, Vec<usize>) {
         let h = Self::find_reflections_helper(&self.rows, diffs);
         let v = Self::find_reflections_helper(&self.cols, diffs);
         (v, h)
     }
 
-    fn find_reflections_helper(landscape: &Vec<Vec<u32>>, diffs: u32) -> Vec<u32> {
+    fn find_reflections_helper(landscape: &Vec<Vec<usize>>, diffs: usize) -> Vec<usize> {
         // Helper for find_reflection, since we use it for vert and horizontal
         (1..landscape.len())
-            .filter(|i| Self::diffs_from_reflection(landscape, *i) as u32 == diffs)
-            .map(|i| i as u32)
+            .filter(|i| Self::diffs_from_reflection(landscape, *i) as usize == diffs)
+            .map(|i| i as usize)
             .collect()
     }
-    fn diffs_from_reflection(landscape: &Vec<Vec<u32>>, mirror: usize) -> usize {
+    fn diffs_from_reflection(landscape: &Vec<Vec<usize>>, mirror: usize) -> usize {
         // Find how many spots need to be changed for that mirror to be valid
         let mut diffs = 0;
         let length = mirror.min(landscape.len() - mirror);
@@ -48,7 +48,7 @@ impl Landscape {
     }
 
     fn new(input: &str) -> Landscape {
-        let rows: Vec<Vec<u32>> = input
+        let rows: Vec<Vec<usize>> = input
             .lines()
             .filter(|l| !l.is_empty())
             .map(|l| {
@@ -69,12 +69,12 @@ impl Landscape {
     }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let landscapes = parse_input(input);
     Some(landscapes.iter().map(|l| l.solve(0)).sum())
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let landscapes = parse_input(input);
     Some(landscapes.iter().map(|l| l.solve(1)).sum())
 }

@@ -12,8 +12,8 @@ enum Direction {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct Point {
-    x: i32,
-    y: i32,
+    x: isize,
+    y: isize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,11 +21,11 @@ struct Crucible {
     position: Option<Point>,
     direction: Direction,
     momentum: u8,
-    heat_loss: u32,
+    heat_loss: usize,
 }
 
 struct CrucibleSolver {
-    grid: Vec<Vec<u32>>,
+    grid: Vec<Vec<usize>>,
 }
 
 impl Ord for Crucible {
@@ -43,12 +43,12 @@ impl PartialOrd for Crucible {
     }
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let crucible = parse_input(input);
     Some(crucible.heat_loss(0, 3))
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let crucible = parse_input(input);
     Some(crucible.heat_loss(4, 10))
 }
@@ -59,7 +59,7 @@ fn parse_input(input: &str) -> CrucibleSolver {
         .map(|l| {
             l.chars()
                 .map(|c| c.to_digit(10).unwrap())
-                .collect::<Vec<u32>>()
+                .collect::<Vec<usize>>()
         })
         .collect();
 
@@ -106,13 +106,13 @@ impl Crucible {
 }
 
 impl CrucibleSolver {
-    fn heat_loss(&self, min_momentum: u8, max_momentun: u8) -> u32 {
+    fn heat_loss(&self, min_momentum: u8, max_momentun: u8) -> usize {
         // BFS Search for minimum heat loss
         let rows = self.grid.len();
         let cols = self.grid[0].len();
         let target = Point {
-            x: cols as i32 - 1,
-            y: rows as i32 - 1,
+            x: cols as isize - 1,
+            y: rows as isize - 1,
         };
 
         let mut heap = BinaryHeap::new();
@@ -172,9 +172,9 @@ impl CrucibleSolver {
 
                     if let Some(new_position) = new_crucible.position {
                         if new_position.x < 0
-                            || new_position.x >= cols as i32
+                            || new_position.x >= cols as isize
                             || new_position.y < 0
-                            || new_position.y >= rows as i32
+                            || new_position.y >= rows as isize
                         {
                             continue;
                         }
@@ -187,7 +187,7 @@ impl CrucibleSolver {
                             new_direction.clone(),
                             *new_momentum,
                         );
-                        if new_crucible.heat_loss < *cost_map.get(&new_state).unwrap_or(&u32::MAX) {
+                        if new_crucible.heat_loss < *cost_map.get(&new_state).unwrap_or(&usize::MAX) {
                             cost_map.insert(new_state, new_crucible.heat_loss);
                             heap.push(new_crucible);
                         }
@@ -196,7 +196,7 @@ impl CrucibleSolver {
             }
         }
 
-        u32::max_value()
+        usize::max_value()
     }
 }
 

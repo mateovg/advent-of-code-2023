@@ -6,7 +6,7 @@ use std::str::FromStr;
 use chrono::{Datelike, FixedOffset, Utc};
 
 #[cfg(feature = "today")]
-const SERVER_UTC_OFFSET: i32 = -5;
+const SERVER_UTC_OFFSET: isize = -5;
 
 /// A valid day number of advent (i.e. an integer in range 1 to 25).
 ///

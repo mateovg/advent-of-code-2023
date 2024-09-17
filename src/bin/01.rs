@@ -1,7 +1,7 @@
 advent_of_code::solution!(1);
 
-pub fn part_one(input: &str) -> Option<u32> {
-    let sum: u32 = input
+pub fn part_one(input: &str) -> Option<usize> {
+    let sum: usize = input
         .lines()
         .map(|l| read_digits(l))
         .map(|nums| get_number(&nums))
@@ -9,7 +9,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(sum)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let sum = input
         .lines()
         .map(|l| read_digits_two(l))
@@ -18,7 +18,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     Some(sum)
 }
 
-pub fn read_digits(input: &str) -> Vec<u32> {
+pub fn read_digits(input: &str) -> Vec<usize> {
     input
         .chars()
         .filter(|c| c.is_ascii_digit())
@@ -26,7 +26,7 @@ pub fn read_digits(input: &str) -> Vec<u32> {
         .collect()
 }
 
-pub fn read_digits_two(input: &str) -> Vec<u32> {
+pub fn read_digits_two(input: &str) -> Vec<usize> {
     let mut digits = vec![];
     for i in 0..input.len() {
         match &input[i..] {
@@ -45,7 +45,7 @@ pub fn read_digits_two(input: &str) -> Vec<u32> {
     digits
 }
 
-pub fn get_number(nums: &Vec<u32>) -> u32 {
+pub fn get_number(nums: &Vec<usize>) -> usize {
     let first = nums.first().unwrap();
     let last = nums.last().unwrap_or(first);
     first * 10 + last
