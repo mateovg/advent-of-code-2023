@@ -6,7 +6,7 @@ pub fn part_one(input: &str) -> Option<usize> {
         .map(|l| read_digits(l))
         .map(|nums| get_number(&nums))
         .sum();
-    Some(sum)
+    Some(sum as usize)
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
@@ -22,7 +22,7 @@ pub fn read_digits(input: &str) -> Vec<usize> {
     input
         .chars()
         .filter(|c| c.is_ascii_digit())
-        .map(|c| c.to_digit(10).unwrap())
+        .map(|c| c.to_digit(10).unwrap() as usize)
         .collect()
 }
 
