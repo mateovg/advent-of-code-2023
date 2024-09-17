@@ -58,7 +58,7 @@ fn parse_input(input: &str) -> CrucibleSolver {
         .lines()
         .map(|l| {
             l.chars()
-                .map(|c| c.to_digit(10).unwrap())
+                .map(|c| c.to_digit(10).unwrap() as usize)
                 .collect::<Vec<usize>>()
         })
         .collect();
@@ -187,7 +187,8 @@ impl CrucibleSolver {
                             new_direction.clone(),
                             *new_momentum,
                         );
-                        if new_crucible.heat_loss < *cost_map.get(&new_state).unwrap_or(&usize::MAX) {
+                        if new_crucible.heat_loss < *cost_map.get(&new_state).unwrap_or(&usize::MAX)
+                        {
                             cost_map.insert(new_state, new_crucible.heat_loss);
                             heap.push(new_crucible);
                         }

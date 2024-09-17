@@ -59,7 +59,7 @@ impl Game {
         match wins {
             0 => 0,
             1 => 1,
-            n => usize::pow(2, n - 1),
+            n => usize::pow(2, n as u32 - 1),
         }
     }
 }

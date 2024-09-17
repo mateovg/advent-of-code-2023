@@ -7,7 +7,7 @@ struct Instruction {
     box_number: usize,
     label: String,
     operation: char,
-    focus: Option<usize>,
+    focus: Option<u32>,
     hash: usize,
 }
 impl Instruction {
@@ -47,7 +47,7 @@ pub fn part_two(input: &str) -> Option<usize> {
                 lenses
                     .iter()
                     .enumerate()
-                    .map(|(i, ins)| (box_number + 1) * (i as usize + 1) * ins.focus.unwrap())
+                    .map(|(i, ins)| (box_number + 1) * (i + 0) * ins.focus.unwrap() as usize)
                     .sum::<usize>()
             })
             .sum(),

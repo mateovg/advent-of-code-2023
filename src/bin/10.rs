@@ -1,6 +1,10 @@
 advent_of_code::solution!(10);
 
-const DIRECTIONS: [(isize, isize); 4] = [(0, -1), (0, 1), (-1, 0), (1, 0)];
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+struct Point {
+    x: usize,
+    y: usize,
+}
 
 #[derive(Debug)]
 struct Sketch {
@@ -9,20 +13,20 @@ struct Sketch {
     height: usize,
 }
 impl Sketch {
-    fn find_start(&self) -> (usize, usize) {
+    fn find_start(&self) -> Point {
         for y in 0..self.height {
             for x in 0..self.width {
                 if self.grid[y][x] == PipeType::Start {
-                    return (x, y);
+                    return Point { x, y };
                 }
             }
         }
-        (0, 0)
+        Point { x: 0, y: 0 }
     }
 
     fn follow_path(&self) -> Vec<(usize, usize)> {
         let mut path = vec![];
-        let mut current = self.find_start();
+        let current = self.find_start();
 
         path
     }
@@ -53,60 +57,21 @@ impl PipeType {
         }
     }
 
-    // Returns if you can enter the pipe from a given direction.
-    fn valid(&self, direction: (isize, isize)) -> bool {
-        match direction {
-            (0, -1) => matches!(
-                self,
-                PipeType::NorthSouth | PipeType::NorthEast | PipeType::NorthWest
-            ),
-            (0, 1) => matches!(
-                self,
-                PipeType::NorthSouth | PipeType::SouthEast | PipeType::SouthWest
-            ),
-            (-1, 0) => matches!(
-                self,
-                PipeType::EastWest | PipeType::NorthEast | PipeType::SouthEast
-            ),
-            (1, 0) => matches!(
-                self,
-                PipeType::EastWest | PipeType::NorthWest | PipeType::SouthWest
-            ),
-            _ => false,
-        }
-    }
-
-    // Returns where you come out of after entering a pipe from a given direction
-    fn next(&self, direction: (isize, isize)) -> Option<(isize, isize)> {
-        if !self.valid(direction) {
-            return None;
-        }
-        match direction {
-            (0, -1) => match self {
-                PipeType::NorthSouth => Some((0, -1)),
-                PipeType::NorthEast => Some((1, 0)),
-                PipeType::NorthWest => Some((-1, 0)),
-                _ => None,
-            },
-            (0, 1) => match self {
-                PipeType::NorthSouth => Some((0, 1)),
-                PipeType::SouthEast => Some((1, 0)),
-                PipeType::SouthWest => Some((-1, 0)),
-                _ => None,
-            },
-            (-1, 0) => match self {
-                PipeType::EastWest => Some((-1, 0)),
-                PipeType::NorthEast => Some((0, -1)),
-                PipeType::SouthEast => Some((0, 1)),
-                _ => None,
-            },
-            (1, 0) => match self {
-                PipeType::EastWest => Some((1, 0)),
-                PipeType::NorthWest => Some((0, -1)),
-                PipeType::SouthWest => Some((0, 1)),
-                _ => None,
-            },
-            _ => None,
+    fn neighbor(self, Point { x, y }: Point) -> Vec<Point> {
+        match self {
+            PipeType::NorthSouth => vec![Point { x, y: y + 1 }, Point { x, y: y - 1 }],
+            PipeType::NorthEast => vec![Point { x, y: y + 1 }, Point { x: x + 1, y }],
+            PipeType::NorthWest => vec![Point { x, y: y + 1 }, Point { x: x - 1, y }],
+            PipeType::SouthEast => vec![Point { x, y: y - 1 }, Point { x: x + 1, y }],
+            PipeType::SouthWest => vec![Point { x, y: y - 1 }, Point { x: x - 1, y }],
+            PipeType::EastWest => vec![Point { x: x + 1, y }, Point { x: x + 1, y }],
+            PipeType::Start => vec![
+                Point { x, y: y + 1 },
+                Point { x, y: y - 1 },
+                Point { x: x + 1, y },
+                Point { x: x + 1, y },
+            ],
+            PipeType::None => vec![],
         }
     }
 }
@@ -167,15 +132,6 @@ mod tests {
     fn test_find_start() {
         let sketch = parse_input(&advent_of_code::template::read_file("examples", DAY));
         let result = sketch.find_start();
-        assert_eq!(result, (0, 2));
-    }
-
-    #[test]
-    fn test_valid_pipe() {
-        let pipe = PipeType::NorthSouth;
-        assert_eq!(pipe.valid((0, -1)), true);
-        assert_eq!(pipe.valid((0, 1)), true);
-        assert_eq!(pipe.valid((-1, 0)), false);
-        assert_eq!(pipe.valid((1, 0)), false);
+        assert_eq!(result, Point { x: 0, y: 2 });
     }
 }
