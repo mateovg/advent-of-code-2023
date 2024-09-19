@@ -1,7 +1,11 @@
 import sys
 
-def get_input_file(day: str):
+
+def get_input_file(day: str, testing=False):
+    if testing:
+        return f"../data/examples/{day}.txt"
     return f"../data/inputs/{day}.txt"
+
 
 def get_input_data(file_path: str) -> str:
     try:

@@ -4,15 +4,16 @@ from time import time
 from typing import Callable
 from helpers.helpers import get_input_file, get_input_data
 
+
 def run_part(part_func: Callable[[str], int], data: str, part_name: str) -> None:
-    try:
-        start_time = time()
-        result = part_func(data)
-        end_time = time()
-        print(f"{part_name} result: {result}")
-        print(f"Run time: {(end_time - start_time) * 1000 :0.6f} ms")
-    except Exception as e:
-        print(f"Error running {part_name}: {e}")
+    # try:
+    start_time = time()
+    result = part_func(data)
+    end_time = time()
+    print(f"{part_name} result: {result}")
+    print(f"Run time: {(end_time - start_time) * 1000:0.6f} ms")
+    # except Exception as e:
+    #     print(f"Error running {part_name}: {e}")
 
 
 def main() -> None:
@@ -30,11 +31,15 @@ def main() -> None:
         print(f"No solution implemented for day {day}")
         sys.exit(1)
 
-    try:
-        day_module.test()
-    except AttributeError:
-        print(f"No tests implemented for day {day}")
-    if len(sys.argv) == 3: # Ghetto but using for now
+    if len(sys.argv) == 3:  # Ghetto but using for now
+        test_input_file = get_input_file(day, testing=True)
+        test_input_data = get_input_data(test_input_file)
+
+        try:
+            run_part(day_module.test, test_input_data, f"Day {day} Testing")
+        except AttributeError as e:
+            print(f"No tests implemented for day {day}")
+            print(e)
         return
 
     run_part(day_module.part_one, input_data, f"Day {day} Part 1")
