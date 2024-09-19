@@ -26,5 +26,6 @@ data/puzzles/*
 dhat-heap.json
 
 # Benchmarks
-
 data/timings.json
+
+__pycache__
